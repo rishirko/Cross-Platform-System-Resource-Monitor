@@ -1,0 +1,73 @@
+Design Decisions
+1. Core-Centric Design
+ 	Decision: The core of the application contains the business logic and is independent of external frameworks or infrastructure.
+ 	Implementation:
+ 	The Core module defines the core entities (SystemUsage) and interfaces (IMonitorService, IMonitorPlugin).
+ 	These interfaces abstract the behavior of system monitoring and plugins, ensuring that the core logic does not depend on specific implementations.
+ 	Benefit: The core remains stable and reusable, even if the infrastructure or plugins change.
+  
+2. Dependency Inversion Principle
+ 	Decision: The outer layers (e.g., Infrastructure, Plugins) depend on the core, not the other way around.
+ 	Implementation:
+ 	The Infrastructure module implements IMonitorService (e.g., WindowsSystemMonitor, LinuxSystemMonitor).
+ 	The Plugins module implements IMonitorPlugin (e.g., FileLoggerPlugin, ApiPostPlugin).
+ 	The App module orchestrates the flow but depends only on the core interfaces, not the concrete implementations.
+ 	Benefit: This ensures that the core logic is not tightly coupled to specific implementations, making the system more flexible and testable.
+  
+3. Use Case Layer
+ 	Decision: The application logic (use cases) is encapsulated in a dedicated layer, separate from the core entities and infrastructure.
+ 	Implementation:
+ 	The MonitorRunner in the App module acts as the use case layer, orchestrating the monitoring process.
+ 	It interacts with the IMonitorService to collect system usage data and invokes IMonitorPlugin implementations to process the data.
+ 	Benefit: This separation ensures that the use case logic is independent of the infrastructure and plugins.
+  
+4. Interface-Driven Design
+ 	Decision: All dependencies are abstracted using interfaces, allowing for easy substitution and testing.
+ 	Implementation:
+ 	IMonitorService abstracts system monitoring, enabling platform-specific implementations (e.g., Windows, Linux).
+ 	IMonitorPlugin abstracts plugins, allowing for different processing mechanisms (e.g., logging, API calls).
+ 	Benefit: This makes the system extensible and testable, as new implementations can be added without modifying the core logic.
+  
+  
+5. Error Handling and Resilience
+ 	Decision: Errors in one part of the system should not affect the overall functionality.
+ 	Implementation:
+ 	Plugins handle their own errors (e.g., file write errors in FileLoggerPlugin).
+ 	The MonitorRunner logs errors and continues the monitoring loop.
+ 	Benefit: This ensures that the system remains robust and continues to function even in the presence of errors.
+  
+6. Extensibility
+ 	Decision: The system is designed to support new features (e.g., additional plugins) without major refactoring.
+ 	Implementation:
+ 	New plugins can be added by implementing IMonitorPlugin and registering them in the DI container.
+ 	New monitoring services can be added by implementing IMonitorService.
+ 	Benefit: This makes the system future-proof and adaptable to changing requirements.
+  
+7. Framework Independence
+ 	Decision: The core logic is independent of external frameworks (e.g., ASP.NET Core, Entity Framework).
+ 	Implementation:
+ 	The core module does not reference any external libraries, ensuring that it is lightweight and portable.
+ 	Framework-specific dependencies (e.g., ILogger, HttpClient) are confined to the outer layers.
+ 	Benefit: This ensures that the core logic can be reused in different contexts (e.g., a console app, a web app).
+  
+
+
+Challenges Faced
+1. Handling Platform-Specific Differences
+ 	Challenge: Implementing system monitoring for both Windows and Linux required handling platform-specific APIs (e.g., PerformanceCounter for Windows).
+ 	Solution: Abstracted the monitoring logic using IMonitorService and provided separate implementations for each platform.
+2. File Access Conflicts
+ 	Challenge: The FileLoggerPlugin could encounter file access issues if the log file is locked by another process.
+ 	Solution: Used exception handling to log errors and ensure the application continues running.
+3. Error Handling in Plugins
+ 	Challenge: Ensuring that errors in one plugin (e.g., file write error) do not affect the execution of other plugins.
+ 	Solution: Isolated plugin execution and logged errors without interrupting the monitoring loop.
+4. Performance Optimization
+ 	Challenge: Collecting system usage data and executing plugins in a loop could lead to performance bottlenecks.
+ 	Solution: Optimized the monitoring interval and used asynchronous programming to minimize resource usage.
+5. Extensibility
+ 	Challenge: Designing the system to support future plugins (e.g., database logger, cloud integration) without major refactoring.
+ 	Solution: Used interfaces and DI to decouple the core system from plugin implementations.
+  
+Summary
+The project was designed with modularity, extensibility, and maintainability in mind. Challenges like platform-specific differences and file access conflicts code were addressed through abstraction and error handling. The result is a robust and scalable system monitoring application.
