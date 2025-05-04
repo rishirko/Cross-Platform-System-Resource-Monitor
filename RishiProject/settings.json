@@ -1,0 +1,11 @@
+﻿{
+  "IntervalSeconds": 2,
+  "ApiUrl": "https://webhook.site/d9b02f6b-88eb-4e3f-b18f-aff1673f12fc",
+  //"https": null, //webhook.site (check posted data on this website)
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning"
+    }
+  }
+}
