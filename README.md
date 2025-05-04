@@ -41,7 +41,6 @@ This is a cross-platform console application built with **.NET 8.0** that monito
 3. **Set Startup Project:**
    - Right-click on the `RishiProject` project → `Set as Startup Project`.
 
-     ```
 
 4. **Build & Run:**
    - Press `Ctrl+F5` or click the **Run** button to start without debugging.
